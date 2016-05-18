@@ -1,0 +1,20 @@
+body {
+  background: #fafafa;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  font-family: _GB2312 FangSong_GB2312
+}
+
+.tagStyle {
+  margin-left: 1rem;
+  margin-top: 1rem;
+  width: 90%;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+}
+
+.slick-list-test {
+  height: 500px;
+}
