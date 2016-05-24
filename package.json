@@ -10,12 +10,18 @@
     "atool-build": "0.7.x",
     "babel-plugin-antd": "0.4.x",
     "es3ify-loader": "^0.2.0",
+    "hymn": "0.0.4",
     "react": "^15.0.2",
+    "react-audio-player": "^0.1.0",
     "react-dom": "^15.0.2",
+    "react-howler": "^3.0.1",
+    "react-responsive-audio-player": "^0.3.0",
     "react-router": "^2.4.0",
+    "react-tiny-audio-player": "^1.0.0",
     "reqwest": "^2.0.5"
   },
   "devDependencies": {
+    "audio-player": "^1.1.0",
     "babel-eslint": "^6.0.0",
     "dora": "0.3.x",
     "dora-plugin-hmr": "0.5.x",
