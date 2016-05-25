@@ -97,6 +97,7 @@ class RoomShare extends React.Component {
           document.title = info.name;
           //获取频道内容
           if (result.data.type == 1) {
+            this.tabkey = 2;
             const views = result.data.content.views;
             this.setState({info: info, content: content, is_picture: false, views: views});
             this.fetchChannelComment();
@@ -150,17 +151,33 @@ class RoomShare extends React.Component {
   }
 
   handleClickAdd() {
-    const { content } = this.state;
+    const { content, commentInfo } = this.state;
     this.autoload = true;
-    let  i = content.length;
-    var lastContent = content[i-1];
-    console.log(lastContent);
-    var params = {
-      app: GetQueryString("app"),
-      cid: GetQueryString("cid"),
-      service: 'Share.GetChannelContent',
-      to_id:lastContent.id
-    };
+    var params;
+    var lastContent;
+    if(this.tabkey == 1) {
+      let  i = content.length;
+      lastContent = content[i-1];
+      console.log(lastContent);
+      params = {
+        app: GetQueryString("app"),
+        cid: GetQueryString("cid"),
+        service: 'Share.GetChannelContent',
+        to_id:lastContent.id
+      };
+    }
+    if(this.tabkey == 2) {
+      let  j = commentInfo.length;
+      lastContent = commentInfo[j-1];
+      console.log(lastContent);
+      params = {
+        app: GetQueryString("app"),
+        cid: GetQueryString("cid"),
+        size:10,
+        service: 'Share.GetChannelCommentByFlow',
+        to_id:lastContent.comment_id
+      };
+    }
     this.setState({loading:true});
     reqwest({
       url: publicUrl,
@@ -169,11 +186,21 @@ class RoomShare extends React.Component {
       type: 'jsonp',
       withCredentials: true,
       success: (result) => {
-        console.log(content.concat(result.data.content));
-        this.setState({
-          content:content.concat(result.data.content),
-          loading:false
-        })
+        if(this.tabkey == 1) {
+          console.log(content.concat(result.data.content));
+          this.setState({
+            content:content.concat(result.data.content),
+            loading:false
+          })
+        }
+        if(this.tabkey == 2) {
+          console.log(result.data);
+          console.log(commentInfo.concat(result.data.comment_info));
+          this.setState({
+            commentInfo:commentInfo.concat(result.data.comment_info),
+            loading:false
+          })
+        }
       }
     });
   }
@@ -188,7 +215,7 @@ class RoomShare extends React.Component {
         // cid:20,
         app: GetQueryString("app"),
         cid: GetQueryString("cid"),
-        size: 10,
+        size:10,
         service: 'Share.GetChannelComment'
       }
       this.fetch();
@@ -200,30 +227,30 @@ class RoomShare extends React.Component {
     if (is_picture) {
       return (<img src={cover} style={{
         width: '100%',
-        height: '20rem'
+        height: '235px'
       }}/>)
     } else {
       let playUrl = views[0].play_list[0].play_url;
 
       if(showVideo) {
         return (
-          <video id="video1" width="100%" height='235px' autoPlay controls>
-            <source src={playUrl} type="video/mp4"/>
-            <source src={playUrl} type="video/ogg"/>
-          </video>
+          <div className='textCenter'>
+            <video id="video1" height='235px' autoPlay controls>
+              <source src={playUrl} type="video/mp4"/>
+              <source src={playUrl} type="video/ogg"/>
+            </video>
+          </div>
         )
       }
       return (
         <div style={{color:'#F1F1F1'}}>
           <img src={content.cover} style={{
             width: '100%',
-            height: '20rem'
+            height: '235px'
           }}/>
-        <Icon style={{transform:'scale(3)',position:'absolute',top:'10rem',right:'180px'}} onClick={this.showVideo} type="caret-circle-o-right" />
+        <Icon className='transformscale3' style={{transform:'scale(3)',position:'absolute',top:'10rem',right:'180px'}} onClick={this.showVideo} type="caret-circle-o-right" />
         </div>
       )
-
-
     }
   }
 
@@ -339,7 +366,7 @@ class RoomShare extends React.Component {
             picVideoList +=
             `
             <div style='text-align:center;color:#F1F1F1' onclick='window.self.handleClickPic(${i},${k})'>
-                <i class='anticon anticon-caret-circle-o-right' style='transform:scale(2);position:absolute;left:47%;bottom:75px'></i>
+                <i class='anticon anticon-caret-circle-o-right transformscale2' style='position:absolute;left:47%;bottom:75px'></i>
               <img src=${picVideo[k]} width='100%' height='150px'/>
             </div>
             `
@@ -353,7 +380,7 @@ class RoomShare extends React.Component {
       }
       if(picVideo.length > 1) {
         for (let k = 0; k < picVideo.length; k++) {
-          picVideoList += `<img style='margin-top:10px' onclick='window.self.handleClickPic(${i},${k})' width='70px' src=${picVideo[k]}>&nbsp;`
+          picVideoList += `<img style='margin-top:10px' onclick='window.self.handleClickPic(${i},${k})' width='70px' height='55px' src=${picVideo[k]}>&nbsp;`
         }
       }
       // console.log(picVideo);
@@ -447,12 +474,12 @@ class RoomShare extends React.Component {
 
   componentDidMount() {
     //app=1 图文 cid=20 视频 cid=6
-    setInterval((function() {
-      if(this.autoload) {
-        return;
-      }
-      this.fetch();
-    }.bind(this)), 10000)
+    // setInterval((function() {
+    //   if(this.autoload) {
+    //     return;
+    //   }
+    //   this.fetch();
+    // }.bind(this)), 10000)
   }
 
   render() {
@@ -473,10 +500,10 @@ class RoomShare extends React.Component {
         <content className='shareContent'>
           <header className='contentPicVio' style={is_picture
             ? {
-              height: '20rem'
+              height: '235px'
             }
             : {
-              height: '20rem'
+              height: '235px'
             }}>
             {this.renderPicVideo()}
           </header>
@@ -504,18 +531,11 @@ class RoomShare extends React.Component {
             </div>
           </div>
         </content>
-        {
-          this.tabkey == 1
-          ?
-          <div className='col-24 textCenter' style={{marginBottom:'2rem'}}>
-            <div className='col-16 col-offset-4' style={{backgroundColor:'#F1F1F1',height:'3rem',lineHeight:'3rem'}} onClick={this.handleClickAdd}>
-              { !loading ? '点击加载更多' : '加载中...'}
-            </div>
+        <div onClick={this.handleClickAdd} className='textCenter' style={{width:'100%',marginBottom:'2rem'}}>
+          <div className='col-16 col-offset-4' style={{backgroundColor:'#F1F1F1',height:'3.5rem',lineHeight:'3.5rem'}} >
+            { !loading ? '点击加载更多' : '加载中...'}
           </div>
-          :
-          ''
-        }
-
+        </div>
         {/*
           <footer className='shareFooter'>
             <div className='col-6'>
@@ -539,6 +559,7 @@ class RoomShare extends React.Component {
             </div>
           </footer>
           */}
+          <div className='col-24' style={{height:'3.5rem',width:'100%',opacity:'0'}}>1111</div>
       </article>
     )
   }
