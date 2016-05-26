@@ -493,6 +493,16 @@ class RoomShare extends React.Component {
     }.bind(this)), 10000)
   }
 
+  test() {
+    // test.innerHTML = '<div>2222</div>'
+    // let carousel = <div dangerouslySetInnerHTML={{__html:test}}></div>
+    // let test =<div></div>;
+    // console.log(test.props.children);
+
+    // console.log(carousel.props.dangerouslySetInnerHTML);
+    return test.props.children
+  }
+
   render() {
     const {is_picture, info, carouse, lagePic, audioSrc, play, loading } = this.state;
     const screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
