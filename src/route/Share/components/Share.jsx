@@ -169,7 +169,7 @@ class RoomShare extends React.Component {
     if(this.tabkey == 2) {
       let  j = commentInfo.length;
       lastContent = commentInfo[j-1];
-      console.log(lastContent);
+      console.log(lastContent.comment_id);
       params = {
         app: GetQueryString("app"),
         cid: GetQueryString("cid"),
@@ -186,20 +186,31 @@ class RoomShare extends React.Component {
       type: 'jsonp',
       withCredentials: true,
       success: (result) => {
+
         if(this.tabkey == 1) {
-          console.log(content.concat(result.data.content));
+          if(result.data.content.length == 0 ) {
+            message.info('已无更多内容');
+            this.setState({loading:false})
+            return;
+          }
+          console.log(result.data.content);
           this.setState({
             content:content.concat(result.data.content),
             loading:false
           })
         }
         if(this.tabkey == 2) {
-          console.log(result.data);
-          console.log(commentInfo.concat(result.data.comment_info));
+          if(result.data.comment_info.length == 0) {
+            message.info('已无更多内容');
+            this.setState({loading:false})
+            return;
+          }
+          // console.log(result.data.comment_info.reverse());
           this.setState({
-            commentInfo:commentInfo.concat(result.data.comment_info),
+            commentInfo:commentInfo.concat(result.data.comment_info.reverse()),
             loading:false
           })
+          // console.log(commentInfo);
         }
       }
     });
@@ -474,12 +485,12 @@ class RoomShare extends React.Component {
 
   componentDidMount() {
     //app=1 图文 cid=20 视频 cid=6
-    // setInterval((function() {
-    //   if(this.autoload) {
-    //     return;
-    //   }
-    //   this.fetch();
-    // }.bind(this)), 10000)
+    setInterval((function() {
+      if(this.autoload) {
+        return;
+      }
+      this.fetch();
+    }.bind(this)), 10000)
   }
 
   render() {
